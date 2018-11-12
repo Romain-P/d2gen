@@ -4,24 +4,29 @@ import com.madbot.d2gen.domain.ASClass
 import java.io.File
 
 object ProtocolBuilder {
+    const val templatePath = "templates"
     var sourcePath: String = ""
     var genPath: String = ""
     var genExtension: String = ""
+    var templateProfile: String = ""
 
-    enum class Entity(private val path: String, val template: String, val store: MutableMap<String, ASClass>) {
-        ENUM("com.ankamagames.dofus.network.enums", "templates/enum.twig", mutableMapOf()),
-        TYPE("com.ankamagames.dofus.network.types", "templates/type.twig", mutableMapOf()),
-        MESSAGE("com.ankamagames.dofus.network.messages", "templates/message.twig", mutableMapOf());
+    enum class Entity(private val path: String, private val template: String, val store: MutableMap<String, ASClass>) {
+        ENUM("com/ankamagames/dofus/network/enums", "enum.twig", mutableMapOf()),
+        TYPE("com/ankamagames/dofus/network/types", "type.twig", mutableMapOf()),
+        MESSAGE("com/ankamagames/dofus/network/messages", "message.twig", mutableMapOf());
 
-        fun path() = sourcePath + File.separatorChar + path.replace('.', File.separatorChar)
         infix fun load(classes: List<ASClass>) = store.putAll(classes.map { it.classPath to it })
-        infix fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, template)
+        infix fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, template())
+
+        fun path() = "$sourcePath/$path".fix("/")
+        fun template() = "$templatePath/$templateProfile/$template".fix("/")
     }
 
-    fun build(sourcePath: String, genPath: String, genExtension: String) {
+    fun build(sourcePath: String, genPath: String, templateProfile: String, genExtension: String) {
         this.sourcePath = sourcePath
         this.genPath = genPath
         this.genExtension = genExtension
+        this.templateProfile = templateProfile
 
         buildEnums()
     }

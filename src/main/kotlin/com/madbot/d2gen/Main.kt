@@ -3,11 +3,12 @@ package com.madbot.d2gen
 import com.madbot.d2gen.core.ProtocolBuilder
 
 const val commands = "Available commands:\n\t" +
-        "gen [name] [sources_path] [gen_path] [gen_ext]" +
+        "gen [name] [sources_path] [gen_path] [template_profile] [gen_ext]" +
         "\n\t:names [protocol]" +
         "\n\t:sources_path must be one level upper `com` (scripts)" +
         "\n\t:gen_path generated files directory" +
-        "\n\t:gen_ext generated files extension e.g .kt"
+        "\n\t:template_profile e.g cpp" +
+        "\n\t:gen_ext generated files extension e.g .h"
 
 fun main(args: Array<String>) {
     println("Type help for listing the commands...")
@@ -19,9 +20,13 @@ fun main(args: Array<String>) {
         when (cmd?.first()) {
             "help" -> println(commands)
             "gen" -> {
-                if (cmd.size >= 5) {
+                if (cmd.size >= 6) {
                     when (cmd[1].toLowerCase()) {
-                        "protocol" -> ProtocolBuilder.build(cmd[2], cmd[3], cmd[4])
+                        "protocol" -> try {
+                            ProtocolBuilder.build(cmd[2], cmd[3], cmd[4], cmd[5])
+                        } catch (e: Exception) {
+                            println(e.message)
+                        }
                         else -> println("Invalid generator name, type help")
                     }
                 } else println("Missing params, type help")

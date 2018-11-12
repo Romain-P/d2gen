@@ -39,3 +39,6 @@ object ASParser {
         return asClass
     }
 }
+
+fun String.fix(separator: String, customSeparator: String = File.separator) =
+        replace(separator, customSeparator)

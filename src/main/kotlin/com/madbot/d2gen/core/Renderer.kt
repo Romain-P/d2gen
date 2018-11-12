@@ -8,9 +8,11 @@ import java.io.File
 object Renderer {
     val templates = mutableMapOf<String, JtwigTemplate>()
 
-    fun render(classes: List<ASClass>, genPath: String, templateFile: String) = classes.forEach {
-        render(it.classPath, genPath, templateFile) { x -> x.with("x", it)}
-    }
+    fun render(classes: List<ASClass>, genPath: String, templateFile: String) =
+            classes.forEach { render(it, genPath, templateFile) }
+
+    fun render(asClass: ASClass, genPath: String, templateFile: String) =
+            render(asClass.classPath, genPath, templateFile) { x -> x.with("x", asClass)}
 
     inline fun render(classPath: String, genPath: String, tplFile: String, binder: (model: JtwigModel) -> Unit) {
         templates.putIfAbsent(tplFile, JtwigTemplate.classpathTemplate(tplFile))
