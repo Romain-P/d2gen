@@ -21,7 +21,7 @@ enum class NativeType(val as3Serializer: String) : Type {
     VECTOR("Vector");
 
     companion object {
-        private val groupedBySerializer = values().groupBy{it.as3Serializer}
+        private val groupedBySerializer = values().map{it.as3Serializer to it}.toMap()
 
         fun get(as3: String) = groupedBySerializer[as3]
     }

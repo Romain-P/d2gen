@@ -1,0 +1,7 @@
+package {{ x.sourcePath|replace({"\\": "."}) }}
+
+enum class {{ x.name }}(val value: Byte) {
+{% for name, field in x.fields %}
+    {{ name }}({{ field.value }}){{ (loop.last) ? '' : ',' }}
+{% endfor %}
+}

@@ -3,7 +3,8 @@ package com.madbot.d2gen.as3
 data class ASField(
     val name: String,
     val type: Type,
-    val genericType: Type,
-    val sizeSerializationType: Type,
-    val static: Boolean
+    val value: Any? = null,
+    val static: Boolean = false,
+    val genericType: Type? = null,
+    val sizeSerializationType: Type? = null
 )
