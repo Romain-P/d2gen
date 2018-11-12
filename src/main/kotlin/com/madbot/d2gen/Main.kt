@@ -1,6 +1,6 @@
 package com.madbot.d2gen
 
-import com.madbot.d2gen.strategy.ProtocolBuilder
+import com.madbot.d2gen.core.ProtocolBuilder
 
 const val commands = "Available commands:\n\t" +
         "gen [name] [sources_path] [gen_path] [gen_ext]" +

@@ -1,4 +1,4 @@
-package com.madbot.d2gen.as3
+package com.madbot.d2gen.domain
 
 enum class NativeType(val as3Serializer: String) : Type {
     BYTE("Byte"),

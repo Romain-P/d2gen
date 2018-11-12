@@ -1,6 +1,6 @@
-package com.madbot.d2gen.strategy
+package com.madbot.d2gen.core
 
-import com.madbot.d2gen.as3.ASClass
+import com.madbot.d2gen.domain.ASClass
 import org.jtwig.JtwigModel
 import org.jtwig.JtwigTemplate
 import java.io.File

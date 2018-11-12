@@ -1,8 +1,8 @@
-package com.madbot.d2gen.strategy
+package com.madbot.d2gen.core
 
-import com.madbot.d2gen.as3.ASClass
-import com.madbot.d2gen.as3.ASField
-import com.madbot.d2gen.as3.NativeType
+import com.madbot.d2gen.domain.ASClass
+import com.madbot.d2gen.domain.ASField
+import com.madbot.d2gen.domain.NativeType
 import java.io.File
 import java.nio.charset.Charset
 

@@ -1,6 +1,6 @@
-package com.madbot.d2gen.strategy
+package com.madbot.d2gen.core
 
-import com.madbot.d2gen.as3.ASClass
+import com.madbot.d2gen.domain.ASClass
 import java.io.File
 
 object ProtocolBuilder {
