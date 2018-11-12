@@ -24,7 +24,7 @@ object ASParser {
         return ASClass(className, fileName, sourcePath, hardPath, asContent)
     }
 
-    fun parseNumberConstant(asClass: ASClass): ASClass {
+    fun parseNumberConstants(asClass: ASClass): ASClass {
         val matches = Pattern.CONSTANT findMatchesIn asClass.asContent
 
         val fields = matches.map {

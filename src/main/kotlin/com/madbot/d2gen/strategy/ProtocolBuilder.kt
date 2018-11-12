@@ -31,7 +31,7 @@ object ProtocolBuilder {
             it.path.endsWith(".as")
         }.map {
             val baseClass = ASParser.loadFileToClassEager(it)
-            ASParser.parseNumberConstant(baseClass)
+            ASParser.parseNumberConstants(baseClass)
         }.toList()
 
         Entity.ENUM load generated
