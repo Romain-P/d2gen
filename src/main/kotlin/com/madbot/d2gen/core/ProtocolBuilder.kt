@@ -5,6 +5,7 @@ import java.io.File
 
 object ProtocolBuilder {
     const val templatePath = "templates"
+    const val templateConfig = "generated.extension"
     var sourcePath: String = ""
     var genPath: String = ""
     var genExtension: String = ""
@@ -16,16 +17,16 @@ object ProtocolBuilder {
         MESSAGE("com/ankamagames/dofus/network/messages", "message.twig", mutableMapOf());
 
         infix fun load(classes: List<ASClass>) = store.putAll(classes.map { it.classPath to it })
-        infix fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, template())
+        infix fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, genExtension, template())
 
         fun path() = "$sourcePath/$path".fix("/")
         fun template() = "$templatePath/$templateProfile/$template".fix("/")
     }
 
-    fun build(sourcePath: String, genPath: String, templateProfile: String, genExtension: String) {
+    fun build(sourcePath: String, genPath: String, templateProfile: String) {
         this.sourcePath = sourcePath
         this.genPath = genPath
-        this.genExtension = genExtension
+        this.genExtension = File("$templatePath/$templateProfile/$templateConfig".fix("/")).readUtf().trim()
         this.templateProfile = templateProfile
 
         buildEnums()

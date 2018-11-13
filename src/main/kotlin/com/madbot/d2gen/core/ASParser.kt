@@ -19,7 +19,7 @@ object ASParser {
         val fileName = file.name
         val sourcePath = file.parentFile.path.removePrefix(ProtocolBuilder.sourcePath + File.separatorChar)
         val hardPath = file.parentFile.path
-        val asContent = file.inputStream().readBytes().toString(Charset.defaultCharset())
+        val asContent = file.readUtf()
 
         return ASClass(className, fileName, sourcePath, hardPath, asContent)
     }
@@ -39,6 +39,3 @@ object ASParser {
         return asClass
     }
 }
-
-fun String.fix(separator: String, customSeparator: String = File.separator) =
-        replace(separator, customSeparator)

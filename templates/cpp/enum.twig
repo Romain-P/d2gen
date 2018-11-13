@@ -1,7 +1,10 @@
-package {{ x.sourcePath|replace({"\\": "."}) }}
+#ifndef {{ x.name.toUpperCase() }}_H_
+#define {{ x.name.toUpperCase() }}_H_
 
-enum class {{ x.name }}(val value: Byte) {
+enum {{ x.name }} {
 {% for name, field in x.fields %}
-    {{ name }}({{ field.value }}){{ (loop.last) ? '' : ',' }}
+    {{ name }} = {{ field.value }}{{ (loop.last) ? '' : ',' }}
 {% endfor %}
 }
+
+#endif /** {{ x.name.toUpperCase() }}_H_ **/
