@@ -1,23 +1,20 @@
 package com.madbot.d2gen.domain
 
+import com.madbot.d2gen.core.*
 import java.io.File
-
-typealias ClassName = String
-typealias FieldName = String
-typealias MethodName = String
-typealias ClassPath = String
 
 /**
  * @packagePath  e.g     com/ankamagames/dofus/
  * @hardPath    e.g     ~/sources/scripts/com/ankamagames/dofus/
- * @classPath   e.g     com/ankamagames/dofus/ClassName.as
+ * @classPath   e.g     com/ankamagames/dofus/ClassName
  *
  * AS Class loaded in memory
  */
 data class ASClass(
         override val name: String,
         val fileName: String,
-        var superClass: String?,
+        var superClass: ASClass?,
+        val protocolEntity: ProtocolBuilder.ProtocolEntity,
         val fields: MutableMap<FieldName, ASField>,
         val methods: MutableMap<MethodName, ASMethod>,
         val imports: MutableMap<ClassName, ClassPath>,
@@ -26,18 +23,19 @@ data class ASClass(
         val classPath: String,
         val asContent: String
 ) : Type {
-    constructor(name: String, fileName: String, sourcePath: String, hardPath: String, content: String)
+    constructor(name: String, fileName: String, entity: ProtocolBuilder.ProtocolEntity, classPath: String, hardPath: String, content: String)
             : this
     (
             name,
             fileName,
             null,
+            entity,
             mutableMapOf(),
             mutableMapOf(),
             mutableMapOf(),
-            sourcePath,
+            classPath,
             hardPath,
-            "$sourcePath${File.separatorChar}$fileName",
+            "$classPath${File.separatorChar}$name",
             content
     )
 }

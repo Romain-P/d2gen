@@ -17,14 +17,14 @@ object ASParser {
         fun findResults(str: String, vararg args: String) = Regex(dynamicPattern!!.format(*args)).find(str)?.groupValues
     }
 
-    infix fun extractFileDataOf(file: File): ASClass {
+    fun extractFileData(file: File, entity: ProtocolBuilder.ProtocolEntity): ASClass {
         val className = file.nameWithoutExtension
         val fileName = file.name
-        val sourcePath = file.parentFile.path.removePrefix(ProtocolBuilder.sourcePath + File.separatorChar)
+        val classPath = file.parentFile.path.removePrefix(ProtocolBuilder.sourcePath + File.separatorChar)
         val hardPath = file.parentFile.path
         val asContent = file.readUtf()
 
-        return ASClass(className, fileName, sourcePath, hardPath, asContent)
+        return ASClass(className, fileName, entity, classPath, hardPath, asContent)
     }
 
     infix fun parseNumberConstantsOf(asClass: ASClass): ASClass {
@@ -45,15 +45,16 @@ object ASParser {
     infix fun parseSuperclassOf(asClass: ASClass) {
         val groups = Pattern.SUPERCLASS findResultsIn asClass.asContent ?: return
         val superClass = groups[1]
+        val path = parseImport(asClass, superClass)
 
-        parseImport(asClass, superClass)
-        asClass.superClass = superClass
+        asClass.superClass = asClass.protocolEntity.store[superClass] ?: asClass.protocolEntity.buildOne("$path.as")
     }
 
-    private fun parseImport(asClass: ASClass, className: String) {
+    private fun parseImport(asClass: ASClass, className: String): String {
         val path = Pattern.IMPORT.findResults(asClass.asContent, className)?.get(1)?.fix(".") //if not found
                 ?: "${asClass.packagePath}/$className".fix("/") //then same package
 
         asClass.imports[className] = path
+        return path
     }
 }

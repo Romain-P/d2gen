@@ -15,20 +15,33 @@ object ProtocolBuilder {
 
     enum class ProtocolEntity(
             private val path: String,
-            private val template: String
+            private val template: String,
+            val parsingRules: (ASClass) -> Unit,
+            val store: MutableMap<ClassPath, ASClass> = mutableMapOf()
     ) {
-        ENUM("com/ankamagames/dofus/network/enums", "enum.twig"),
-        TYPE("com/ankamagames/dofus/network/types", "type.twig"),
-        MESSAGE("com/ankamagames/dofus/network/messages", "message.twig");
+        ENUM("com/ankamagames/dofus/network/enums", "enum.twig", ::buildEnum),
+        TYPE("com/ankamagames/dofus/network/types", "type.twig", ::buildClass),
+        MESSAGE("com/ankamagames/dofus/network/messages", "message.twig", ::buildClass);
 
-        fun browseFiles(onEach: (ASClass) -> Unit) = File(path()).walk()
-                .filter { it.path.endsWith(AS_EXTENSION) }
-                .forEach { onEach(ASParser extractFileDataOf it) }g
+        private fun builder(file: File): ASClass {
+            val asClass = ASParser.extractFileData(file, this)
+            parsingRules(asClass)
+            render(asClass)
+            store(asClass)
+            return asClass
+        }
 
-        infix fun render(asClass: ASClass) = Renderer.render(asClass, genPath, genExtension, template())
-        infix fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, genExtension, template())
+        infix fun buildOne(classPath: String) = builder(File(path(classPath)))
+        fun buildAll() = File(path()).walk()
+                .filter { !store.containsKey(it.nameWithoutExtension) && it.path.endsWith(AS_EXTENSION) }
+                .forEach { builder(it) }
+
+        fun render(asClass: ASClass) = Renderer.render(asClass, genPath, genExtension, template())
+        fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, genExtension, template())
+        fun store(asClass: ASClass) = store.put(asClass.name, asClass)
 
         fun path() = "$sourcePath/$path".fix("/")
+        fun path(filePath: String) = "$sourcePath/$filePath".fix("/")
         fun template() = "$TEMPLATE_PATH/$templateProfile/$template".fix("/")
     }
 
@@ -38,21 +51,17 @@ object ProtocolBuilder {
         this.genExtension = File("$TEMPLATE_PATH/$templateProfile/$TEMPLATE_CONFIG".fix("/")).readUtf().trim()
         this.templateProfile = templateProfile
 
-        buildEnums()
-        buildTypes()
+        ProtocolEntity.ENUM.buildAll()
+        ProtocolEntity.TYPE.buildAll()
+        ProtocolEntity.MESSAGE.buildAll()
     }
 
-    private fun buildEnums() {
-        ProtocolEntity.ENUM.browseFiles {
-            ASParser parseNumberConstantsOf it
-            ProtocolEntity.ENUM render it
-        }
+    private fun buildEnum(it: ASClass) {
+        ASParser parseNumberConstantsOf it
     }
 
-    private fun buildTypes() {
-        ProtocolEntity.TYPE.browseFiles {
-            ASParser parseSuperclassOf it
-            ProtocolEntity.TYPE render it
-        }
+    private fun buildClass(it: ASClass) {
+        ASParser parseSuperclassOf it
+        ASParser parseNumberConstantsOf it //fetch protocolId
     }
 }
