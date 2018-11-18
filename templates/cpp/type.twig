@@ -1,0 +1,13 @@
+{% set guard = x.name.toUpperCase() %}
+#ifndef {{ guard }}_H_
+#define {{ guard }}_H_
+
+{% for className, classPath in x.imports %}
+    #include "{{ className }}.h"
+{% endfor %}
+
+class {{ x.name }}{% if (x.superClass is not null) %}: public {{ x.superClass }}{% endif %} {
+
+}
+
+#endif /** {{ guard }}_H_ **/

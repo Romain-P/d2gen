@@ -4,43 +4,55 @@ import com.madbot.d2gen.domain.ASClass
 import java.io.File
 
 object ProtocolBuilder {
-    const val templatePath = "templates"
-    const val templateConfig = "generated.extension"
+    const val TEMPLATE_PATH = "templates"
+    const val AS_EXTENSION = ".as"
+    const val TEMPLATE_CONFIG = "generated.extension"
+
     var sourcePath: String = ""
     var genPath: String = ""
     var genExtension: String = ""
     var templateProfile: String = ""
 
-    enum class Entity(private val path: String, private val template: String, val store: MutableMap<String, ASClass>) {
-        ENUM("com/ankamagames/dofus/network/enums", "enum.twig", mutableMapOf()),
-        TYPE("com/ankamagames/dofus/network/types", "type.twig", mutableMapOf()),
-        MESSAGE("com/ankamagames/dofus/network/messages", "message.twig", mutableMapOf());
+    enum class ProtocolEntity(
+            private val path: String,
+            private val template: String
+    ) {
+        ENUM("com/ankamagames/dofus/network/enums", "enum.twig"),
+        TYPE("com/ankamagames/dofus/network/types", "type.twig"),
+        MESSAGE("com/ankamagames/dofus/network/messages", "message.twig");
 
-        infix fun load(classes: List<ASClass>) = store.putAll(classes.map { it.classPath to it })
+        fun browseFiles(onEach: (ASClass) -> Unit) = File(path()).walk()
+                .filter { it.path.endsWith(AS_EXTENSION) }
+                .forEach { onEach(ASParser extractFileDataOf it) }g
+
+        infix fun render(asClass: ASClass) = Renderer.render(asClass, genPath, genExtension, template())
         infix fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, genExtension, template())
 
         fun path() = "$sourcePath/$path".fix("/")
-        fun template() = "$templatePath/$templateProfile/$template".fix("/")
+        fun template() = "$TEMPLATE_PATH/$templateProfile/$template".fix("/")
     }
 
     fun build(sourcePath: String, genPath: String, templateProfile: String) {
         this.sourcePath = sourcePath
         this.genPath = genPath
-        this.genExtension = File("$templatePath/$templateProfile/$templateConfig".fix("/")).readUtf().trim()
+        this.genExtension = File("$TEMPLATE_PATH/$templateProfile/$TEMPLATE_CONFIG".fix("/")).readUtf().trim()
         this.templateProfile = templateProfile
 
         buildEnums()
+        buildTypes()
     }
 
     private fun buildEnums() {
-        val generated = File(Entity.ENUM.path()).walk().filter {
-            it.path.endsWith(".as")
-        }.map {
-            val baseClass = ASParser.loadFileToClassEager(it)
-            ASParser.parseNumberConstants(baseClass)
-        }.toList()
+        ProtocolEntity.ENUM.browseFiles {
+            ASParser parseNumberConstantsOf it
+            ProtocolEntity.ENUM render it
+        }
+    }
 
-        Entity.ENUM load generated
-        Entity.ENUM render generated
+    private fun buildTypes() {
+        ProtocolEntity.TYPE.browseFiles {
+            ASParser parseSuperclassOf it
+            ProtocolEntity.TYPE render it
+        }
     }
 }

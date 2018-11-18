@@ -12,7 +12,7 @@ object Renderer {
             classes.forEach { render(it, genPath, genExt, templateFile) }
 
     fun render(asClass: ASClass, genPath: String, genExt: String, templateFile: String) =
-            render("${asClass.sourcePath}/${asClass.name}.$genExt".fix("/"), genPath, templateFile) { x -> x.with("x", asClass)}
+            render("${asClass.packagePath}/${asClass.name}.$genExt".fix("/"), genPath, templateFile) { x -> x.with("x", asClass)}
 
     inline fun render(classPath: String, genPath: String, tplFile: String, binder: (model: JtwigModel) -> Unit) {
         templates.putIfAbsent(tplFile, JtwigTemplate.classpathTemplate(tplFile))
