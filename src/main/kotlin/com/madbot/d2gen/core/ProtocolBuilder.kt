@@ -37,7 +37,6 @@ object ProtocolBuilder {
                 .forEach { builder(it) }
 
         fun render(asClass: ASClass) = Renderer.render(asClass, genPath, genExtension, template())
-        fun render(classes: List<ASClass>) = Renderer.render(classes, genPath, genExtension, template())
         fun store(asClass: ASClass) = store.put(asClass.name, asClass)
 
         fun path() = "$sourcePath/$path".fix("/")

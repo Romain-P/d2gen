@@ -15,7 +15,7 @@ object Renderer {
             render("${asClass.packagePath}/${asClass.name}.$genExt".fix("/"), genPath, templateFile) { x -> x.with("x", asClass)}
 
     inline fun render(classPath: String, genPath: String, tplFile: String, binder: (model: JtwigModel) -> Unit) {
-        templates.putIfAbsent(tplFile, JtwigTemplate.classpathTemplate(tplFile))
+        templates.putIfAbsent(tplFile, JtwigTemplate.fileTemplate(File(tplFile)))
         val template = templates[tplFile]!!
         val model = JtwigModel.newModel()
 
