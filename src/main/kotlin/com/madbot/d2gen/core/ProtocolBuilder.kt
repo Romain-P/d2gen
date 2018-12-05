@@ -2,6 +2,7 @@ package com.madbot.d2gen.core
 
 import com.madbot.d2gen.domain.ASClass
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 object ProtocolBuilder {
     const val TEMPLATE_PATH = "templates"
@@ -50,9 +51,17 @@ object ProtocolBuilder {
         this.genExtension = File("$TEMPLATE_PATH/$templateProfile/$TEMPLATE_CONFIG".fix("/")).readUtf().trim()
         this.templateProfile = templateProfile
 
-        ProtocolEntity.ENUM.buildAll()
-        ProtocolEntity.TYPE.buildAll()
-        ProtocolEntity.MESSAGE.buildAll()
+        println("Started...")
+        var generated = 0
+        val elapsed = measureTimeMillis {
+            ProtocolEntity.values().forEach {
+                it.buildAll()
+                generated += it.store.size
+                println("\t\t${it.store.size} ${it.name.toLowerCase()}s generated")
+            }
+        }
+        println("Total\t$generated classes generated")
+        println("Work done in ${elapsed / 1000} seconds")
     }
 
     private fun buildEnum(it: ASClass) {
@@ -62,5 +71,7 @@ object ProtocolBuilder {
     private fun buildClass(it: ASClass) {
         ASParser parseSuperclassOf it
         ASParser parseNumberConstantsOf it //fetch protocolId
+        ASParser parseConstructorOf it
+        ASParser parseSerializersOf it
     }
 }

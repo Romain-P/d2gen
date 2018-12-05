@@ -3,7 +3,7 @@ package com.madbot.d2gen.domain
 interface Instruction
 
 data class SerializationInstruction(
-        val field: ASField
+        val serializedFieldName: ASField
 ): Instruction
 
 data class BooleanWrappingInstruction(

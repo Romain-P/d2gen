@@ -11,7 +11,6 @@ const val commands = "Available commands:\n\t" +
 
 fun main(args: Array<String>) {
     println("Type help for listing the commands...")
-
     do {
         print("> ")
         val cmd = readLine()?.split(' ')
@@ -21,11 +20,8 @@ fun main(args: Array<String>) {
             "gen" -> {
                 if (cmd.size >= 5) {
                     when (cmd[1].toLowerCase()) {
-                        "protocol" -> try {
+                        "protocol" ->
                             ProtocolBuilder.build(cmd[2], cmd[3], cmd[4])
-                        } catch (e: Exception) {
-                            println(e.message)
-                        }
                         else -> println("Invalid generator name, type help")
                     }
                 } else println("Missing params, type help")
